@@ -1,32 +1,42 @@
 ---
-title: Installing and Configuring YOUR-PRODUCT-NAME
+title: Installing and Configuring Control Tower for Concourse
 owner: Partners
 ---
 
+
 <strong><%= modified_date %></strong>
 
-This topic describes how to install and configure YOUR-PRODUCT-NAME.
+This topic describes how to install and configure Control Tower for Concourse.
 
-##<a id='install'></a> Install and Configure YOUR-PRODUCT-NAME
+##<a id='install'></a> Install and Configure Control Tower for Concourse
 
-To install the YOUR-PRODUCT-NAME file on the Ops Manager Installation Dashboard, do the following:
+To install the Control Tower for Concourse file on the Ops Manager Installation Dashboard, do the following:
 
-1. Download the product file from Pivotal Network.
+1. Download the binary file from Pivotal Network.
 
-1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file. 
+2. Install it into your `PATH`.
 
-1. Under the **Import a Product** button, click **+** next to the version number of YOUR-PRODUCT-NAME. 
-This adds the tile to your staging area.
+3. You can choose to rename the file at your convenience.</br>
+Please note that the name of the file you choose will be the same as the command ran against your deployments. For example:
 
-1. Click the newly added **YOUR-PRODUCT-NAME** tile.
+```sh
+$ control-tower deploy --iaas gcp <deployment-name>
+```
+if the binary is renamed `control-tower`, or</br>
 
-1. **This portion of the procedure should tell the users how to configure the newly added tile by
-walking them through the sections. Which fields should they fill out? What are the different
-checkboxes? Include relevant screenshots here.** 
+```sh
+$ ctwr deploy --iaas aws <deployment-name>
+```
+if the the binary is renamed `ctwr`, etc...
 
-1. Click **Save**.
 
-1. Return to the Ops Manager Installation Dashboard and click **Apply changes** to install YOUR-PRODUCT-NAME tile.
+4.Ensure correct local dependencies for bootstrapping a [BOSH VM](https://bosh.io/docs/cli-v2-install/#additional-dependencies).
 
-**If needed, include additional configuration information below. For example, maybe there are
-configuration options not required for installation but which could be useful for certain users.**
+##<a id='credentials'></a> Configure Credentials
+Use long lived credentials, and not temporary security credentials.
+
+- **AWS (one of the following):**<br>
+  - Environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.<br>
+  - Credentials configured via `aws configure`, for example `[default]` profile in `~/.aws/credentials`.<br>
+- **GCP:**<br>
+  - `GOOGLE_APPLICATION_CREDENTIALS_CONTENTS` environment variables set to the path to a GCP credentials json file.
