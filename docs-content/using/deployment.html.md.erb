@@ -28,7 +28,7 @@ eval "$(control-tower info my-ci --env)"
 
 A new deploy from scratch takes approximately 20 minutes.
 
-##<a id='Define a name'></a>Define a name
+##<a id='Define a name'></a>Define a Name
 
 **Deployment name**</br>
 
@@ -75,7 +75,7 @@ $ export IAAS=AWS
 
 **IaaS User Permissions**</br>
 
-If you would like to run Control Tower with its own user account, create a user with the following permissions
+If you would like to run Control Tower with its own user account, create a user with the following permissions:
 
 | Using a dedicated AWS IAM account |
 |------------------------------------|
@@ -86,7 +86,7 @@ If you would like to run Control Tower with its own user account, create a user 
 |----------------------------------|
 |An IAM Primitive role of `roles/owner` for the target GCP Project is required.|
 
-##<a id='Choosing a region'></a>Choosing a region
+##<a id='Choosing a region'></a>Choosing a Region
 
 **Define region (Global flag)**</br>
 AWS or GCP region (default: “eu-west-1” on AWS and “europe-west1” on GCP) `[$AWS_REGION]`</br>
@@ -132,7 +132,7 @@ $ control-tower deploy --iaas aws --add-tag worker=<my-worker> my-ci
 ```
 
 
-##<a id='Using a custom domain'></a>Using a custom domain
+##<a id='Using a custom domain'></a>Using a Custom Domain
 
 If you have a DNS zone configured in AWS Route53 or GCP CloudDNS, you can use this for your deployment.
 
@@ -208,4 +208,4 @@ Once the terraform step is complete, `control-tower` deploys a BOSH director on 
 
 - One t2.small/n1-standard-1 for the Concourse web server
 - One m4.xlarge [spot](https://aws.amazon.com/ec2/spot/)/n1-standard-4 [preemptible](https://cloud.google.com/preemptible-vms/) instance used as a Concourse worker
-- Access via over HTTP and HTTPS using a user-provided certificate, or an auto-generated self-signed certificate if one isn't provided.
+- Access via over HTTP and HTTPS using a user-provided certificate, or an auto-generated self-signed certificate if one isn't provided

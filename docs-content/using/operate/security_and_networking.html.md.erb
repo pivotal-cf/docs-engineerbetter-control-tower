@@ -89,7 +89,7 @@ Customise first rds network CIDR (must be within --vpc-network-range) (required 
 - `--rds-subnet-range2 value`:</br>
 Customise second rds network CIDR (must be within --vpc-network-range) (required for AWS)`[$RDS_SUBNET_RANGE2]`
 
-  > All the ranges above should be in the CIDR format of IPv4/Mask. The sizes can vary as long as vpc-network-range is big enough to contain all others (in case IAAS is AWS). The smallest CIDR for public and private subnets is a /28. The smallest CIDR for rds1 and rds2 subnets is a /29.
+  > All of the ranges above should be in the CIDR format of IPv4/Mask. The sizes can vary as long as vpc-network-range is big enough to contain all others (in case IAAS is AWS). The smallest CIDR for public and private subnets is a /28. The smallest CIDR for rds1 and rds2 subnets is a /29.
 
 ##<a id='Credential Management'></a>Credential Management
 
