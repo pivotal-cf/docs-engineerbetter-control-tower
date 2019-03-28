@@ -28,7 +28,7 @@ eval "$(control-tower info my-ci --env)"
 
 A new deploy from scratch takes approximately 20 minutes.
 
-##<a id='Define a name'></a>Define a name
+##<a id='Define a name'></a>Define a Name
 
 **Deployment name**</br>
 
@@ -86,7 +86,7 @@ If you would like to run Control Tower with its own user account, create a user 
 |----------------------------------|
 |An IAM Primitive role of `roles/owner` for the target GCP Project is required.|
 
-##<a id='Choosing a region'></a>Choosing a region
+##<a id='Choosing a region'></a>Choosing a Region
 
 **Define region (Global flag)**</br>
 AWS or GCP region (default: “eu-west-1” on AWS and “europe-west1” on GCP) `[$AWS_REGION]`</br>
@@ -120,7 +120,7 @@ $ control-tower deploy --namespace <namespace> --iaas gcp my-ci
 
 &rightarrow; Note: if `--namespace` has been provided in the initial `deploy`, it will be required for any subsequent `control-tower` calls against the same deployment.
 
-##IaaS Resource tagging
+##IaaS Resource Tagging
 
 **VM tagging**
 
@@ -132,7 +132,7 @@ $ control-tower deploy --iaas aws --add-tag worker=<my-worker> my-ci
 ```
 
 
-##<a id='Using a custom domain'></a>Using a custom domain
+##<a id='Using a custom domain'></a>Using a Custom Domain
 
 If you have a DNS zone configured in AWS Route53 or GCP CloudDNS, you can use this for your deployment.
 
