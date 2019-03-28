@@ -93,9 +93,9 @@ Customise second rds network CIDR (must be within --vpc-network-range) (required
 
 ##<a id='Credential Management'></a>Credential Management
 
-Control Tower deploys the [credhub](https://github.com/cloudfoundry-incubator/credhub) service alongside Concourse and configures Concourse to use it.</br>
-More detail on how credhub integrates with Concourse can be found [here](https://concourse-ci.org/creds.html).</br>
-You can log into credhub by running:</br>
+Control Tower deploys the [CredHub](https://github.com/cloudfoundry-incubator/credhub) service alongside Concourse and configures Concourse to use it.</br>
+More detail on how CredHub integrates with Concourse can be found [here](https://concourse-ci.org/creds.html).</br>
+You can log into CredHub by running:</br>
 
 ```sh
 $ eval "$(control-tower info --env --region $region $deployment)"
