@@ -1,0 +1,211 @@
+---
+title: Deploying
+owner: Partners
+---
+
+##<a id='Quickstart Deploy'></a>Quickstart Deploy
+
+Deploy a new Concourse with:
+
+```sh
+$ control-tower deploy --iaas <iaas-provider> <your-project-name>
+```
+
+For example:
+
+```sh
+$ control-tower deploy --iaas aws my-ci
+
+...
+DEPLOY SUCCESSFUL. Log in with:
+fly --target ci login --insecure --concourse-url https://10.0.0.0 --username  --password
+
+Metrics available at https://10.0.0.0:3000 using the same username and password
+
+Log into credhub with:
+eval "$(control-tower info my-ci --env)"
+```
+
+A new deploy from scratch takes approximately 20 minutes.
+
+##<a id='Define a name'></a>Define a Name
+
+**Deployment name**</br>
+
+Is defined during initial deployment:</br>
+
+```sh
+$ control-tower deploy --iaas gcp my-ci
+```
+Needs to be used for any subsequent `control-tower` calls against the same deployment.
+
+**Character limit**</br>
+11 characters.
+
+##<a id='IaaS Provider Support'></a>IaaS Provider Support
+
+**Choosing an IaaS**</br>
+
+Supported IaaS providers:
+
+- Amazon Web Services
+- Google Cloud Platform
+
+To choose an IaaS provider, use the `--iaas` flag.</br>
+
+**The `--iaas` flag is required for all commands.**
+
+Allowed values:
+
+- `gcp`
+- `aws`
+
+For example:
+
+```sh
+$ control-tower deploy --iaas gcp my-ci
+```
+Or set `[$IaaS]` environment variable to `value`
+
+For example:
+
+```sh
+$ export IAAS=AWS
+```
+
+**IaaS User Permissions**</br>
+
+If you would like to run Control Tower with its own user account, create a user with the following permissions:
+
+| Using a dedicated AWS IAM account |
+|------------------------------------|
+|![](http://i.imgur.com/Q0mOUjv.png)|
+
+
+| Using a dedicated GCP IAM member |
+|----------------------------------|
+|An IAM Primitive role of `roles/owner` for the target GCP Project is required.|
+
+##<a id='Choosing a region'></a>Choosing a Region
+
+**Define region (Global flag)**</br>
+AWS or GCP region (default: “eu-west-1” on AWS and “europe-west1” on GCP) `[$AWS_REGION]`</br>
+To define a region, use the `--region` flag:
+
+```sh
+$ control-tower deploy --iaas gcp --region eu-west-2 my-ci
+```
+
+**Define zone**</br>
+Specify an availability zone `[$ZONE]` (cannot be changed after the initial deployment).</br>
+To define a zone, use the `--zone` flag:
+
+```sh
+$ control-tower deploy --iaas gcp --region eu-west-2 --zone eu-west-2b my-ci
+```
+
+##<a id='Deployment Namespace'></a>Deployment Namespace
+
+**Namespace**
+**(Global flag)**</br>
+Using a namespace allows you to group your deployments using a meaningful name.
+
+The namespace is used as part of the configuration bucket name `[$NAMESPACE]`.</br>
+Use any valid string that provides a meaningful namespace of the deployment.</br>
+The flag is `--namespace value` and can be used like below:</br>
+
+```sh
+$ control-tower deploy --namespace <namespace> --iaas gcp my-ci
+```
+
+&rightarrow; Note: if `--namespace` has been provided in the initial `deploy`, it will be required for any subsequent `control-tower` calls against the same deployment.
+
+##IaaS Resource Tagging
+
+**VM tagging**
+
+Add a tag/label to the BOSH VMs that form your `control-tower` deployment. Can be used multiple times in a single deploy command.</br>
+Use the `--add-tag key=value` command:
+
+```sh
+$ control-tower deploy --iaas aws --add-tag worker=<my-worker> my-ci
+```
+
+
+##<a id='Using a custom domain'></a>Using a Custom Domain
+
+If you have a DNS zone configured in AWS Route53 or GCP CloudDNS, you can use this for your deployment.
+
+Domain to use as endpoint for Concourse web interface (eg: ci.myproject.com).
+
+To define a custom domain, use the `--domain` flag or set the `$DOMAIN` environment variable:
+
+```sh
+$ control-tower deploy --domain chimichanga.engineerbetter.com my-ci
+```
+In the example above `control-tower` will search for a hosted zone that matches chimichanga.engineerbetter.com or engineerbetter.com and add a record to the longest match (chimichanga.engineerbetter.com in this example).
+
+##<a id='User Authentication Configuration'></a>User Authentication Configuration
+Users can choose to configure authentication against their concourses via GitHub.
+
+- `--github-auth-client-id value`:</br>
+Client ID for a github OAuth application.</br>
+Used for Github Auth `[$GITHUB_AUTH_CLIENT_ID]`
+
+- `--github-auth-client-secret value`:</br>
+Client Secret for a github OAuth application.<br>
+Used for Github Auth `[$GITHUB_AUTH_CLIENT_SECRET]`.
+
+-------------------------------------------------------------
+
+##<a id='Deployment Infrastructure'></a>Deployment Infrastructure
+
+`control-tower` first creates an S3 or GCS bucket to store its own configuration and saves a `config.json` file there. It then uses Terraform to deploy the following infrastructure:
+
+|AWS                              |
+|------------------------------- |
+|Key pair |
+|S3 bucket for the blobstore|
+|IAM user that can access the blobstore with:|
+| - IAM access key + IAM user policy|
+|IAM user that can deploy EC2 instances:|
+|IAM access key + IAM user policy|
+|VPC|
+|Internet gateway|
+|Route for internet_access|
+|NAT gateway|
+|Route table for private|
+|Subnet for public|
+|Subnet for private|
+|Route table association for private|
+|Route53 record for Concourse|
+|EIP for director, ATC, and NAT|
+|Security groups for director, vms, RDS, and ATC|
+|Route table for RDS|
+|Route table associations for RDS|
+|Subnets for RDS|
+|DB subnet group|
+|DB instance|
+
+|GCP         |
+|------------|
+|DNS|
+|Record pointing to the ATC IP|
+|Compute route for the nat instance|
+|Compute instance for the nat|
+|Compute network|
+|Public and Private Compute subnetworks|
+|Compute firewalls for director, nat, atc-one, atc-two, vms, atc-three, internal, and sql|
+|Service account for for BOSH|
+|Service account key for BOSH|
+|Project iam member for BOSH|
+|Compute addresses for the ATC and Director|
+|Sql database instance|
+|Sql database|
+|Sql user|
+
+Once the terraform step is complete, `control-tower` deploys a BOSH director on an t2.small/n1-standard-1 instance, and then uses that to deploy a Concourse with the following settings:
+
+- One t2.small/n1-standard-1 for the Concourse web server
+- One m4.xlarge [spot](https://aws.amazon.com/ec2/spot/)/n1-standard-4 [preemptible](https://cloud.google.com/preemptible-vms/) instance used as a Concourse worker
+- Access via over HTTP and HTTPS using a user-provided certificate, or an auto-generated self-signed certificate if one isn't provided

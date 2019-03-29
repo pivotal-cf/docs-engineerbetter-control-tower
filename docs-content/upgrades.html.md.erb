@@ -1,0 +1,36 @@
+---
+title: Upgrading and Maintenance
+owner: Partners
+---
+
+##<a id='Automatic Upgrade'></a>Automatic Upgrade
+
+When Control Tower deploys Concourse, it now adds a pipeline to the new Concourse called `control-tower-self-update`.</br>
+This pipeline continuously monitors our Github repo for new releases and updates Concourse in place whenever a new version of Control Tower comes out.
+This pipeline is paused by default, so just unpause it in the UI to enable the feature.
+
+
+##<a id='Manual Upgrade'></a>Manual Upgrade
+
+To upgrade your Concourse manually, download the new binary from Pivotal Network and run `control-tower deploy <your-project-name>` again.
+
+##<a id='Rotating NATS certificates'></a>Rotating NATS Certificates
+
+- Rotation
+  - `--renew-nats-cert`</br>
+  Allows you to rotate the NATS certificate on the director</br>
+  <p class="note warning"><strong>WARNING</strong>: Note that the NATS certificate [is hardcoded to expire after 1 year](https://github.com/cloudfoundry/bosh-cli/blob/master/vendor/github.com/cloudfoundry/config-server/types/certificate_generator.go#L171). This command follows [the instructions on bosh.io](https://bosh.io/docs/nats-ca-rotation/) to rotate this certificate. **This operation _will_ cause downtime on your Concourse** as it performs multiple full recreates.</p>
+
+- Stage monitoring
+    - `--stage value`</br>
+    Specify a specific stage at which to start the NATS certificate renewal process. If not specified, the stage will be determined automatically.
+
+    - Certificate rotation stage reference table:
+
+| Stage | Description |
+|-------|-------------|
+| 0     | Adding new CA (create-env) |
+| 1     | Recreating VMs for the first time (recreate) |
+| 2     | Removing old CA (create-env) |
+| 3     | Recreating VMs for the second time (recreate) |
+| 4     | Cleaning up director-creds.yml |

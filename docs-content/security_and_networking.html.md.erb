@@ -1,0 +1,102 @@
+---
+title: Security and Networking
+owner: Partners
+---
+
+##<a id='Configuring SSL Certificates'></a>Configuring SSL Certificates
+
+Deployed Concourses can be accessed via over HTTPS using a
+user-provided certificate, or an auto-generated self-signed certificate
+if one isn't provided.
+
+**Without custom domain name**
+
+If a custom domain is not used,`control-tower` will generate a self-signed certificate.
+
+
+**With custom domain name**
+
+  - Automatically generated certificates</br>
+    By default control-tower will generate a self-signed certificate using the given domain.</br>
+  - User-provided certificates</br>
+    Pass the cert and private key as strings using:</br>
+      `--tls-cert value`:TLS cert to use with Concourse endpoint `[$TLS_CERT]`</br>
+      `--tls-key value`:TLS private key to use with Concourse endpoint `[$TLS_KEY]`</br>
+
+For example:
+
+```sh
+$ control-tower deploy \
+  --domain chimichanga.engineerbetter.com \
+  --tls-cert "$(cat chimichanga.engineerbetter.com.crt)" \
+  --tls-key "$(cat chimichanga.engineerbetter.com.key)" \
+  my-ci
+```
+
+
+
+##<a id='Data Encryption'></a>Data Encryption
+
+**Database Encryption**
+
+Database encryption is enabled by default.
+
+**Volume Encryption**
+
+On AWS, EBS volumes are encypted by default.
+
+
+
+##<a id='Network Security'></a>Network Security
+
+**Persistent public IP**
+
+Concourse workers are accessible on a single public IP to simplify external security policy.</br>
+
+**Configuring trusted networks**
+
+Control Tower normally allows incoming traffic from any address to reach your web node. You can use the `--allow-ips` flag to add firewall rules to prevent this or set `$ALLOW_IPS` environment variable.
+
+This option takes a comma separated list of values. The default is "0.0.0.0/0".
+
+```sh
+$ control-tower deploy --iaas gcp --allow-ips 0.0.0.0/0 <deployment-name>
+```
+Note: `allow-ips` governs what can access Concourse but not what can access the control plane (i.e. the BOSH director).
+
+To allow traffic from your local machine only, use the command:
+
+```sh
+$ control-tower deploy --allow-ips $(dig +short myip.opendns.com@resolver1.opendns.com) --iaas gcp <deployment-name>
+```
+
+##<a id='Deploying to custom network ranges'></a>Deploy to Custom Network Ranges
+
+Choose custom IP ranges for a concourse's network, created at deploy time.
+
+**Warning: network ranges cannot be changed after initial deployment.**
+
+You can use the flags below to customise the range of each part of the subnet:
+
+- `--vpc-network-range value`:</br>
+Customise the VPC network CIDR to deploy into (required for AWS)`[$VPC_NETWORK_RANGE]`
+- `--public-subnet-range value`:</br>
+Customise public network CIDR (if IAAS is AWS must be within --vpc-network-range) (required)`[$PUBLIC_SUBNET_RANGE]`</br>
+- `--private-subnet-range value`:</br>
+Customise private network CIDR (if IAAS is AWS must be within --vpc-network-range) (required)`[$PRIVATE_SUBNET_RANGE]`</br>
+- `--rds-subnet-range1 value`:</br>
+Customise first rds network CIDR (must be within --vpc-network-range) (required for AWS)`[$RDS_SUBNET_RANGE1]`</br>
+- `--rds-subnet-range2 value`:</br>
+Customise second rds network CIDR (must be within --vpc-network-range) (required for AWS)`[$RDS_SUBNET_RANGE2]`
+
+  > All of the ranges above should be in the CIDR format of IPv4/Mask. The sizes can vary as long as vpc-network-range is big enough to contain all others (in case IAAS is AWS). The smallest CIDR for public and private subnets is a /28. The smallest CIDR for rds1 and rds2 subnets is a /29.
+
+##<a id='Credential Management'></a>Credential Management
+
+Control Tower deploys the [CredHub](https://github.com/cloudfoundry-incubator/credhub) service alongside Concourse and configures Concourse to use it.</br>
+More detail on how CredHub integrates with Concourse can be found [here](https://concourse-ci.org/creds.html).</br>
+You can log into CredHub by running:</br>
+
+```sh
+$ eval "$(control-tower info --env --region $region $deployment)"
+```

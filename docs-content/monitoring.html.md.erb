@@ -1,0 +1,37 @@
+---
+title: Monitoring
+owner: Partners
+---
+
+
+##<a id='Metrics'></a>Metrics
+
+
+Control Tower now automatically deploys Influxdb, Riemann, and Grafana on the web node. You can access Grafana on port 3000 of your regular concourse URL using the same username and password as your Concourse admin user. We put in a default dashboard that tracks:</b>
+Build times, CPU usage, Containers, and Disk usage.
+
+
+
+
+##<a id='Info'></a>Info
+
+
+- To fetch information about your Control Tower deployment:
+
+```sh
+$ control-tower info --json <your-project-name>
+```
+
+- To load credentials into your environment from your Control Tower deployment:
+
+```sh
+$ eval "$(control-tower info --env <your-project-name>)"
+```
+
+- To check the expiry of the BOSH Director's NATS CA certificate:
+
+```sh
+$ control-tower info --cert-expiry <your-project-name>
+```
+
+  <p class="note warning"><strong>WARNING</strong>: If your deployment is approaching a year old, it may stop working due to expired certificates. For information please see this issue https://github.com/EngineerBetter/concourse-up/issues/81.
